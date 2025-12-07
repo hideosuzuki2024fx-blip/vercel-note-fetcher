@@ -11,13 +11,11 @@ export default async function handler(req, res) {
     const html = await response.text();
     const $ = cheerio.load(html);
 
-    // <article>タグ → <main>タグ → body で順に本文を抽出
     let content =
       $('article').text().trim() ||
       $('main').text().trim() ||
       $('body').text().trim();
 
-    // 長すぎる場合は先頭部分だけ
     if (content.length > 5000) {
       content = content.slice(0, 5000) + '...';
     }
