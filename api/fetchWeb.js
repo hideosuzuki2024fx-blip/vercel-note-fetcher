@@ -1,3 +1,5 @@
+import * as cheerio from 'cheerio';
+
 export default async function handler(req, res) {
   const target = req.query.url;
   if (!target) {
@@ -7,10 +9,23 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(target);
     const html = await response.text();
+    const $ = cheerio.load(html);
+
+    // <article>タグ → <main>タグ → body で順に本文を抽出
+    let content =
+      $('article').text().trim() ||
+      $('main').text().trim() ||
+      $('body').text().trim();
+
+    // 長すぎる場合は先頭部分だけ
+    if (content.length > 5000) {
+      content = content.slice(0, 5000) + '...';
+    }
+
     res.status(200).json({
       url: target,
-      length: html.length,
-      snippet: html.slice(0, 1000) // 本文の最初だけ返す
+      length: content.length,
+      text: content
     });
   } catch (err) {
     res.status(500).json({ error: String(err) });
