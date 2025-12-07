@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/fetchWeb.js",
+      "use": "@vercel/node",
+      "config": { "includeFiles": ["package.json"] }
+    }
+  ]
+}
